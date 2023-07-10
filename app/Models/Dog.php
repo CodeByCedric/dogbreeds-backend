@@ -10,13 +10,14 @@ class Dog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
-        'name',
-        'description',
         'exercise_needs',
         'grooming_requirements',
         'trainability',
         'protectiveness',
-        'timestamps',
     ];
+
+    public function translations()
+    {
+        return $this->hasMany(DogsLanguage::class);
+    }
 }

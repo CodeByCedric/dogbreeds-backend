@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('dogs', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("description");
             $table->integer("exercise_needs");
             $table->integer("grooming_requirements");
             $table->integer("trainability");
