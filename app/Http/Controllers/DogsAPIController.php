@@ -7,6 +7,8 @@ use App\Modules\Services\DogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+
+//Todo: move validation to service
 class DogsAPIController extends Controller
 {
     protected DogService $dogService;
