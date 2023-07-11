@@ -18,6 +18,6 @@ class Dog extends Model
 
     public function translations()
     {
-        return $this->hasMany(DogsLanguage::class);
+        return $this->hasMany(DogsLanguage::class, "dog_id");
     }
 }

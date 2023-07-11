@@ -26,7 +26,7 @@ class DogsAPIController extends Controller
 
     public function show($id): JsonResponse
     {
-        $dog = $this->dogService->getById($id);
+        $dog = $this->dogService->getDogInfoById($id);
 
         if (!$dog) {
             return response()->json(['message' => 'Dog not found'], 404);
@@ -53,7 +53,7 @@ class DogsAPIController extends Controller
 
     public function update(Request $request, $id): JsonResponse
     {
-        $dog = $this->dogService->getById($id);
+        $dog = $this->dogService->getDogInfoById($id);
 
         if (!$dog) {
             return response()->json(['message' => 'Dog not found'], 404);
@@ -75,7 +75,7 @@ class DogsAPIController extends Controller
 
     public function destroy($id): JsonResponse
     {
-        $dog = $this->dogService->getById($id);
+        $dog = $this->dogService->getDogInfoById($id);
 
         if (!$dog) {
             return response()->json(['message' => 'Dog not found'], 404);

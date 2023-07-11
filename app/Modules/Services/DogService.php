@@ -12,9 +12,26 @@ class DogService
         return Dog::all();
     }
 
-    public function getById($id)
+    public function getDogInfoById($id)
     {
-        return Dog::find($id);
+        $dog = Dog::find($id);
+
+        if ($dog) {
+            $language = app()->getLocale();
+
+            $translation = $dog->translations()
+                ->where('language', $language)
+                ->first();
+
+            if ($translation) {
+                $dog->name = $translation->name;
+                $dog->description = $translation->description;
+            }
+
+            return $dog;
+        }
+
+        return null;
     }
 
     public function create($data)
