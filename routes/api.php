@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DogsAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/dogs', [DogsAPIController::class, 'index']);
+Route::get('/dogs/{id}', [DogsAPIController::class, 'show']);
+Route::post('/dogs', [DogsAPIController::class, 'store']);
+Route::put('/dogs/{id}', [DogsAPIController::class, 'update']);
+Route::delete('/dogs/{id}', [DogsAPIController::class, 'destroy']);
