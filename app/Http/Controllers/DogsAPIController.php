@@ -18,9 +18,10 @@ class DogsAPIController extends Controller
         $this->dogService = $dogService;
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $dogs = $this->dogService->getAll();
+        $language = $request->input('lang', 'en');
+        $dogs = $this->dogService->getAll($language);
         return response()->json($dogs);
     }
 
@@ -35,18 +36,29 @@ class DogsAPIController extends Controller
         return response()->json($dog);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $this->validate($request, [
-            'breed' => 'required|string|unique:dogs|max:255',
-            'size' => 'required|string|max:255',
-            'shedding' => 'required|integer|max:255',
-            'energy' => 'required|integer|max:255',
-            'protectiveness' => 'required|integer|max:255',
-            'trainability' => 'required|integer|max:255',
+            'exercise_needs' => 'required',
+            'grooming_requirements' => 'required',
+            'trainability' => 'required',
+            'protectiveness' => 'required',
+            'name' => 'required',
+            'description' => 'required',
         ]);
 
-        $dog = $this->dogService->create($request->all());
+        $data = $request->only([
+            'exercise_needs',
+            'grooming_requirements',
+            'trainability',
+            'protectiveness',
+            'name',
+            'description',
+        ]);
+
+        $language = $request->input('lang', 'en');
+
+        $dog = $this->dogService->create($data, $language);
 
         return response()->json($dog, 201);
     }

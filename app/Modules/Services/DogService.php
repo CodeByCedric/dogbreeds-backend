@@ -3,13 +3,27 @@
 namespace App\Modules\Services;
 
 use App\Models\Dog;
+use App\Models\DogsLanguage;
 use Illuminate\Database\Eloquent\Collection;
 
 class DogService
 {
-    public function getAll(): Collection
+    public function getAll($language): Collection
     {
-        return Dog::all();
+        $dogs = Dog::all();
+
+        $dogs->each(function ($dog) use ($language) {
+            $translation = $dog->translations()
+                ->where('language', $language)
+                ->first();
+
+            if ($translation) {
+                $dog->name = $translation->name;
+                $dog->description = $translation->description;
+            }
+        });
+
+        return $dogs;
     }
 
     public function getDogInfoById($id)
@@ -34,9 +48,24 @@ class DogService
         return null;
     }
 
-    public function create($data)
+    public function create($data, $language)
     {
-        return Dog::create($data);
+        $dog = Dog::create([
+            'exercise_needs' => $data['exercise_needs'],
+            'grooming_requirements' => $data['grooming_requirements'],
+            'trainability' => $data['trainability'],
+            'protectiveness' => $data['protectiveness'],
+        ]);
+
+        $dogLanguage = new DogsLanguage([
+            'language' => $language,
+            'name' => $data['name'],
+            'description' => $data['description'],
+        ]);
+
+        $dog->translations()->save($dogLanguage);
+
+        return $dog;
     }
 
     public function update(Dog $dog, $data): Dog
