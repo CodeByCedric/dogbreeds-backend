@@ -6,9 +6,9 @@ namespace App\Http\Controllers;
 use App\Modules\Services\DogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 
-//Todo: move validation to service
 class DogsAPIController extends Controller
 {
     protected DogService $dogService;
@@ -38,29 +38,24 @@ class DogsAPIController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'exercise_needs' => 'required',
-            'grooming_requirements' => 'required',
-            'trainability' => 'required',
-            'protectiveness' => 'required',
-            'name' => 'required',
-            'description' => 'required',
-        ]);
+        try {
+            $data = $request->only([
+                'exercise_needs',
+                'grooming_requirements',
+                'trainability',
+                'protectiveness',
+                'name',
+                'description',
+            ]);
 
-        $data = $request->only([
-            'exercise_needs',
-            'grooming_requirements',
-            'trainability',
-            'protectiveness',
-            'name',
-            'description',
-        ]);
+            $language = $request->input('lang', 'en');
 
-        $language = $request->input('lang', 'en');
+            $dog = $this->dogService->create($data, $language);
 
-        $dog = $this->dogService->create($data, $language);
-
-        return response()->json($dog, 201);
+            return response()->json($dog, 201);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     public function update(Request $request, $id): JsonResponse
@@ -70,15 +65,6 @@ class DogsAPIController extends Controller
         if (!$dog) {
             return response()->json(['message' => 'Dog not found'], 404);
         }
-
-        $this->validate($request, [
-            'breed' => 'string|unique:dogs|max:255',
-            'size' => 'string|max:255',
-            'shedding' => 'integer|max:255',
-            'energy' => 'integer|max:255',
-            'protectiveness' => 'integer|max:255',
-            'trainability' => 'integer|max:255',
-        ]);
 
         $dog = $this->dogService->update($dog, $request->all());
 

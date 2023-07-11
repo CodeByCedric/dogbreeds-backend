@@ -5,6 +5,7 @@ namespace App\Modules\Services;
 use App\Models\Dog;
 use App\Models\DogsLanguage;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Validator;
 
 class DogService
 {
@@ -50,6 +51,19 @@ class DogService
 
     public function create($data, $language)
     {
+        $validator = Validator::make($data, [
+            'exercise_needs' => 'required',
+            'grooming_requirements' => 'required',
+            'trainability' => 'required',
+            'protectiveness' => 'required',
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            throw new \InvalidArgumentException($validator->errors()->first());
+        }
+
         $dog = Dog::create([
             'exercise_needs' => $data['exercise_needs'],
             'grooming_requirements' => $data['grooming_requirements'],
@@ -70,6 +84,19 @@ class DogService
 
     public function update(Dog $dog, $data): Dog
     {
+        $validator = Validator::make($data, [
+            'breed' => 'string|unique:dogs|max:255',
+            'size' => 'string|max:255',
+            'shedding' => 'integer|max:255',
+            'energy' => 'integer|max:255',
+            'protectiveness' => 'integer|max:255',
+            'trainability' => 'integer|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            throw new \InvalidArgumentException($validator->errors()->first());
+        }
+
         $dog->update($data);
         return $dog;
     }
