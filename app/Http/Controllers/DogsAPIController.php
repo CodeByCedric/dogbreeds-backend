@@ -36,7 +36,7 @@ class DogsAPIController extends Controller
         return response()->json($dog);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try {
             $data = $request->only([
@@ -48,15 +48,37 @@ class DogsAPIController extends Controller
                 'description',
             ]);
 
-            $language = $request->input('lang', 'en');
+            $languages = $request->input('languages', ['en']); // Default language is 'en'
 
-            $dog = $this->dogService->create($data, $language);
+            $dog = $this->dogService->create($data, $languages);
 
             return response()->json($dog, 201);
         } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
+//    public function store(Request $request)
+//    {
+//        try {
+//            $data = $request->only([
+//                'exercise_needs',
+//                'grooming_requirements',
+//                'trainability',
+//                'protectiveness',
+//                'name',
+//                'description',
+//            ]);
+//
+//            $language = $request->input('lang', 'en');
+//
+//            $dog = $this->dogService->create($data, $language);
+//
+//            return response()->json($dog, 201);
+//        } catch (InvalidArgumentException $e) {
+//            return response()->json(['error' => $e->getMessage()], 400);
+//        }
+//    }
 
     public function update(Request $request, $id): JsonResponse
     {
@@ -66,7 +88,13 @@ class DogsAPIController extends Controller
             return response()->json(['message' => 'Dog not found'], 404);
         }
 
-        $dog = $this->dogService->update($dog, $request->all());
+        $language = $request->input('lang', 'en');
+
+        $dog = $this->dogService->update($dog, $request->all(), $language);
+
+        if (!$dog) {
+            return response()->json(['message' => 'Update failed'], 500);
+        }
 
         return response()->json($dog);
     }
