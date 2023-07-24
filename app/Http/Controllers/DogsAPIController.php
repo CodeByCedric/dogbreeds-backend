@@ -48,7 +48,7 @@ class DogsAPIController extends Controller
                 'description',
             ]);
 
-            $languages = $request->input('languages', ['en']); // Default language is 'en'
+            $languages = $request->input('languages', ['en']);
 
             $dog = $this->dogService->create($data, $languages);
 
@@ -57,28 +57,6 @@ class DogsAPIController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
-
-//    public function store(Request $request)
-//    {
-//        try {
-//            $data = $request->only([
-//                'exercise_needs',
-//                'grooming_requirements',
-//                'trainability',
-//                'protectiveness',
-//                'name',
-//                'description',
-//            ]);
-//
-//            $language = $request->input('lang', 'en');
-//
-//            $dog = $this->dogService->create($data, $language);
-//
-//            return response()->json($dog, 201);
-//        } catch (InvalidArgumentException $e) {
-//            return response()->json(['error' => $e->getMessage()], 400);
-//        }
-//    }
 
     public function update(Request $request, $id): JsonResponse
     {

@@ -17,7 +17,7 @@ class DogsLanguage extends Model
 
     protected $fillable = ['dog_id', 'language', 'name', 'description'];
 
-    public function dog()
+    public function dog(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Dog::class, 'dog_id');
     }
