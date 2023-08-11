@@ -49,36 +49,6 @@ class AuthController extends Controller
 
     }
 
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return JsonResponse
-     */
-
-//    public function login(Request $request): JsonResponse
-//    {
-//
-//        $request->validate([
-//            'email' => 'required',
-//            'password' => 'required'
-//        ]);
-//
-//        $credentials = $request->only('email', 'password');
-//
-//        $token = Auth::attempt($credentials);
-//
-//        if (!$token) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
-//
-//        return response()->json([
-//            'status' => 'success',
-//            'message' => 'Logged in successfully',
-//            'token' => $token,
-//        ]);
-//
-//    }
-
     public function login(Request $request): JsonResponse
     {
 
