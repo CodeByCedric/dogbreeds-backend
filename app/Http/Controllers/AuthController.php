@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -55,6 +55,30 @@ class AuthController extends Controller
      * @return JsonResponse
      */
 
+//    public function login(Request $request): JsonResponse
+//    {
+//
+//        $request->validate([
+//            'email' => 'required',
+//            'password' => 'required'
+//        ]);
+//
+//        $credentials = $request->only('email', 'password');
+//
+//        $token = Auth::attempt($credentials);
+//
+//        if (!$token) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
+//
+//        return response()->json([
+//            'status' => 'success',
+//            'message' => 'Logged in successfully',
+//            'token' => $token,
+//        ]);
+//
+//    }
+
     public function login(Request $request): JsonResponse
     {
 
@@ -73,23 +97,36 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Logged in successfully',
-            'token' => $token,
-        ]);
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer'
+            ]
+        ])->withCookie(
+            'token',
+            $token,
+            config('jwt.ttl'),
+            '/',
+            null,
+            true,
+            true,
+            false,
+            "None"
+        );
+
+//        The withCookie function expects the following parameters:
+//
+//        the name of the cookie
+//        the value of the cookie
+//        how many minutes the cookie should be valid
+//        the path of the cookie
+//        the domain of the cookie
+//        whether the cookie should be secure
+//        whether it is a http only cookie that can't be accessed by Javascript
+//        whether to do urlencoding
+//        a value for the SameSite attribute
 
     }
-//    public function login(): JsonResponse
-//    {
-//
-//
-//        $credentials = request(['email', 'password']);
-//
-//        if (! $token = auth()->attempt($credentials)) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
-//
-//        return $this->respondWithToken($token);
-//    }
+
 
     /**
      * Get the authenticated User.
@@ -109,6 +146,8 @@ class AuthController extends Controller
     public function logout(): JsonResponse
     {
         auth()->logout();
+
+        $cookie = Cookie::forget('token');
 
         return response()->json(['message' => 'Successfully logged out']);
     }
