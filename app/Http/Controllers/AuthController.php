@@ -149,7 +149,7 @@ class AuthController extends Controller
 
         $cookie = Cookie::forget('token');
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out'])->withCookie($cookie);
     }
 
     /**
