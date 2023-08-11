@@ -2,21 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Modules\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use InvalidArgumentException;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
+    protected AuthService $authService;
+
+    /** Create a new AuthController instance.
      * @return void
      */
-    public function __construct()
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', [
+//            'except' => [
+//                'login',
+//                'register'
+//            ]]);
+//    }
+
+
+    public function __construct(AuthService $authService)
     {
+        $this->authService = $authService;
+
         $this->middleware('auth:api', [
             'except' => [
                 'login',
@@ -26,28 +39,42 @@ class AuthController extends Controller
 
     public function register(Request $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8'
-        ]);
+        try {
+            $data = $request->all();
+            $user = $this->authService->register($data);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
+            return response()->json($user, 201);
 
-        $token = Auth::login($user);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User Registered Successfully',
-            'user' => $user,
-            'token' => $token
-        ]);
+        } catch (InvalidArgumentException $exception) {
+            return response()->json(['error' => $exception->getMessage()], 400);
+        }
 
     }
+
+//    public function register(Request $request): JsonResponse
+//    {
+//        $request->validate([
+//            'name' => 'required',
+//            'email' => 'required|email',
+//            'password' => 'required|min:8'
+//        ]);
+//
+//        $user = User::create([
+//            'name' => $request->name,
+//            'email' => $request->email,
+//            'password' => $request->password,
+//        ]);
+//
+//        $token = Auth::login($user);
+//
+//        return response()->json([
+//            'status' => 'success',
+//            'message' => 'User Registered Successfully',
+//            'user' => $user,
+//            'token' => $token
+//        ]);
+//
+//    }
 
     public function login(Request $request): JsonResponse
     {
@@ -139,7 +166,7 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    protected function respondWithToken($token): JsonResponse
+    protected function respondWithToken(string $token): JsonResponse
     {
         return response()->json([
             'access_token' => $token,
