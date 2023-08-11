@@ -14,15 +14,21 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout']);
-Route::post('refresh', [AuthController::class, 'refresh']);
-
 
 Route::get('/dogs', [DogsAPIController::class, 'index']);
 Route::get('/dogs/{id}', [DogsAPIController::class, 'show']);
-Route::post('/dogs', [DogsAPIController::class, 'store']);
-Route::put('/dogs/{id}', [DogsAPIController::class, 'update']);
-Route::delete('/dogs/{id}', [DogsAPIController::class, 'destroy']);
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+
+    Route::post('/dogs', [DogsAPIController::class, 'store']);
+    Route::put('/dogs/{id}', [DogsAPIController::class, 'update']);
+    Route::delete('/dogs/{id}', [DogsAPIController::class, 'destroy']);
+
+});
+
+
