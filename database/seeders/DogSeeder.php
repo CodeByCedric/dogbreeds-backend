@@ -34,7 +34,7 @@ class DogSeeder extends Seeder
             ];
 
             foreach ($translations as $translation) {
-                DB::table('dog_languages')->insert([
+                DB::table('dogs_languages')->insert([
                     'dog_id' => $dogId,
                     'language' => $translation['language'],
                     'name' => $translation['name'],

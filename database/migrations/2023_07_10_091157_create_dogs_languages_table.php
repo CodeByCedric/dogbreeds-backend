@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('dog_languages', function (Blueprint $table) {
+        Schema::create('dogs_languages', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("dog_id");
             $table->string("language");
