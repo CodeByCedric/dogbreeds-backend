@@ -56,7 +56,13 @@ class AuthService
         ];
     }
 
-    public function login(array $data): bool
+    /**
+     * Attempts to log the user in and returns a JWT token.
+     * @param array $data
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    public function login(array $data): string
     {
 
         $this->validateLoginData($data);
