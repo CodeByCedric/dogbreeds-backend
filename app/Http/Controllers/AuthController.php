@@ -13,10 +13,6 @@ class AuthController extends Controller
 {
     protected AuthService $authService;
 
-    /** Create a new AuthController instance.
-     * @return void
-     */
-
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
@@ -54,55 +50,31 @@ class AuthController extends Controller
                     'type' => 'bearer'
                 ]
             ])->withCookie(
-                'token',
-                $token,
-                config('jwt.ttl'),
-                '/',
-                null,
-                true,
-                true,
-                false,
-                "None"
+                'token', //name
+                $token, //value
+                config('jwt.ttl'), //minutes
+                '/', //path, specifies the URL path for which the cookie is valid.
+                null, //domain, the domain for which the cookie is valid. If not set, the cookie will be valid for the current domain by default. (for use with subdomains)
+                true, //secure, indicates if the cookie should only be sent over HTTPS.
+                true, //httpOnly, whether it can be accessed by JavaScript
+                false, //raw, whether to do urlencoding, if true, the cookie value will not be URL encoded before being set. This can be useful in cases where you need to ensure that the value is in a specific format.
+                "None" /*sameSite (String): This is a newer attribute that provides some CSRF (cross-site request forgery) protection. The possible values are:
+                          'Lax': The cookie is only sent to the server when the request's origin is the same as the target origin, or when navigating from the target site.
+                          'Strict': The cookie is only sent to the server when the request’s origin is the same as the target origin (i.e., not for cross-origin requests).
+                          'None': The cookie will be sent with all requests, both cross-origin and same-origin.*/
             );
         } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
         }
-
-
-
-
-//        The withCookie function expects the following parameters:
-//
-//        the name of the cookie
-//        the value of the cookie
-//        how many minutes the cookie should be valid
-//        the path of the cookie
-//        the domain of the cookie
-//        whether the cookie should be secure
-//        whether it is a http only cookie that can't be accessed by Javascript
-//        whether to do urlencoding
-//        a value for the SameSite attribute
-
     }
 
-
-    /**
-     * Get the authenticated User.
-     *
-     * @return JsonResponse
-     */
     public function me(): JsonResponse
     {
         return response()->json(auth()->user());
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return JsonResponse
-     */
     public function logout(): JsonResponse
     {
         auth()->logout();
@@ -112,23 +84,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out'])->withCookie($cookie);
     }
 
-    /**
-     * Refresh a token.
-     *
-     * @return JsonResponse
-     */
     public function refresh(): JsonResponse
     {
         return $this->respondWithToken(auth()->refresh());
+
     }
 
-    /**
-     * Get the token array structure.
-     *
-     * @param string $token
-     *
-     * @return JsonResponse
-     */
     protected function respondWithToken(string $token): JsonResponse
     {
         return response()->json([
@@ -136,5 +97,6 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+
     }
 }

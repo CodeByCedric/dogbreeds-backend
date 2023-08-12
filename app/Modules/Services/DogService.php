@@ -6,6 +6,7 @@ use App\Models\Dog;
 use App\Models\DogsLanguage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
+use InvalidArgumentException;
 
 class DogService
 {
@@ -63,7 +64,7 @@ class DogService
         ]);
 
         if ($validator->fails()) {
-            throw new \InvalidArgumentException($validator->errors()->first());
+            throw new InvalidArgumentException($validator->errors()->first());
         }
 
         $dog = Dog::create([
@@ -98,7 +99,7 @@ class DogService
         ]);
 
         if ($validator->fails()) {
-            throw new \InvalidArgumentException($validator->errors()->first());
+            throw new InvalidArgumentException($validator->errors()->first());
         }
 
         $dog->update([
