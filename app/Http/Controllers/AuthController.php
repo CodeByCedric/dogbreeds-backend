@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Modules\Services\AuthService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use InvalidArgumentException;
 
@@ -16,15 +16,6 @@ class AuthController extends Controller
     /** Create a new AuthController instance.
      * @return void
      */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', [
-//            'except' => [
-//                'login',
-//                'register'
-//            ]]);
-//    }
-
 
     public function __construct(AuthService $authService)
     {
@@ -51,64 +42,36 @@ class AuthController extends Controller
 
     }
 
-//    public function register(Request $request): JsonResponse
-//    {
-//        $request->validate([
-//            'name' => 'required',
-//            'email' => 'required|email',
-//            'password' => 'required|min:8'
-//        ]);
-//
-//        $user = User::create([
-//            'name' => $request->name,
-//            'email' => $request->email,
-//            'password' => $request->password,
-//        ]);
-//
-//        $token = Auth::login($user);
-//
-//        return response()->json([
-//            'status' => 'success',
-//            'message' => 'User Registered Successfully',
-//            'user' => $user,
-//            'token' => $token
-//        ]);
-//
-//    }
-
     public function login(Request $request): JsonResponse
     {
+        try {
+            $token = $this->authService->login($request->all());
 
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required'
-        ]);
-
-        $credentials = $request->only('email', 'password');
-
-        $token = Auth::attempt($credentials);
-
-        if (!$token) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json([
+                'status' => 'success',
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer'
+                ]
+            ])->withCookie(
+                'token',
+                $token,
+                config('jwt.ttl'),
+                '/',
+                null,
+                true,
+                true,
+                false,
+                "None"
+            );
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer'
-            ]
-        ])->withCookie(
-            'token',
-            $token,
-            config('jwt.ttl'),
-            '/',
-            null,
-            true,
-            true,
-            false,
-            "None"
-        );
+
+
 
 //        The withCookie function expects the following parameters:
 //

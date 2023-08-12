@@ -5,11 +5,13 @@ namespace App\Modules\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use InvalidArgumentException;
 
 
 class AuthService
 {
-    public function register(array $data): array
+
+    private function validateRegistrationData(array $data): void
     {
         $validator = Validator::make($data, [
             'name' => 'required',
@@ -18,9 +20,27 @@ class AuthService
         ]);
 
         if ($validator->fails()) {
-            throw new \InvalidArgumentException($validator->errors()->first());
+            throw new InvalidArgumentException($validator->errors()->first());
+            //todo make custom exception?
         }
+    }
 
+    private function validateLoginData(array $data): void
+    {
+        $validator = Validator::make($data, [
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new InvalidArgumentException($validator->errors()->first());
+            //todo make custom exception?
+        }
+    }
+
+    public function register(array $data): array
+    {
+        $this->validateRegistrationData($data);
 
         $user = User::create([
             'name' => $data['name'],
@@ -34,5 +54,24 @@ class AuthService
             'user' => $user,
             'token' => $token,
         ];
+    }
+
+    public function login(array $data): bool
+    {
+
+        $this->validateLoginData($data);
+
+        $credentials = [
+            'email' => $data['email'],
+            'password' => $data['password']
+        ];
+
+        $token = Auth::attempt($credentials);
+
+        if (!$token) {
+            throw new InvalidArgumentException();
+        } else {
+            return $token;
+        }
     }
 }
