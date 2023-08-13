@@ -1,0 +1,179 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "Web Frameworks Project - Dog Breed API"
+  description: API for the Dog Breed App
+
+paths:
+  /dogs:
+    post:
+      summary: Creates a new dog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dog"
+      responses:
+        201:
+          description: The created dog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dog"
+  /dogs/{dog}:
+    get:
+      summary: Returns a dog
+      parameters:
+        - in: path
+          name: dog
+          required: true
+          schema:
+            type: string
+          description: The name of the dog
+      responses:
+        200:
+          description: A single dog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dog"
+    put:
+      summary: Updates an existing dog
+      parameters:
+        - in: path
+          name: dog
+          required: true
+          schema:
+            type: integer
+          description: The ID of the dog to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dog"
+      responses:
+        200:
+          description: The updated dog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dog"
+    delete:
+      summary: Deletes a dog
+      parameters:
+        - in: path
+          name: dog
+          required: true
+          schema:
+            type: integer
+          description: The ID of the dog to delete
+      responses:
+        200:
+          description: Dog deleted
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: Created
+  /login:
+    post:
+      summary: Log in the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '204':
+          description: Logged in the user
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                description: JWT cookie containing access token
+components:
+  schemas:
+    dogs:
+      type: object
+      properties:
+        id:
+          type: integer
+        breed:
+          type: string
+        size:
+          type: string
+        shedding:
+          type: integer
+        energy:
+          type: integer
+        protectiveness:
+          type: integer
+      required:
+        - name
+        - breed
+        - size
+        - shedding
+        - energy
+        - protectiveness
+    dogs_language:
+      type: object
+      properties:
+        id:
+          type: integer
+        dog_id:
+          type: integer
+        language:
+          type: string
+        breed:
+          type: string
+        size:
+          type: string
+      required:
+        - language
+        - breed
+        - size
+    users:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - password
+  securitySchemes:
+    jwtCookie:
+      type: apiKey
+      name: access_token
+      in: cookie
+      description: JWT token as a secure cookie
