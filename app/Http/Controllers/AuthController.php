@@ -38,18 +38,12 @@ class AuthController extends Controller
 
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         try {
             $token = $this->authService->login($request->all());
 
-            return response()->json([
-                'status' => 'success',
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer'
-                ]
-            ])->withCookie(
+            return response(null, 204)->withCookie(
                 'token', //name
                 $token, //value
                 config('jwt.ttl'), //minutes
