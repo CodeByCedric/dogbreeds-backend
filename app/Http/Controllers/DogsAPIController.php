@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Dog;
-use App\Models\DogsLanguage;
 use App\Modules\Services\DogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -60,53 +58,13 @@ class DogsAPIController extends Controller
         }
     }
 
-    public function updateAllLanguages(Request $request)
+    public function updateAllLanguages(Request $request): void
     {
         $data = $request->all();
 
-        $dogData = [
-            'id' => $data['id'],
-            'exercise_needs' => $data['exercise_needs'],
-            'grooming_requirements' => $data ['grooming_requirements'],
-            'trainability' => $data['trainability'],
-            'protectiveness' => $data['protectiveness'],
-        ];
+        $this->dogService->update($data);
 
-        $dog = Dog::findOrFail($data['id']);
-        $dog->update($dogData);
 
-        $languages = $data['languages'];
-        $descriptions = $data['description'];
-        $names = $data['name'];
-
-        foreach ($languages as $index => $language) {
-            $dogsLanguage = DogsLanguage::where('dog_id', $data['id'])
-                ->where('language', $language)
-                ->update([
-                    'name' => $names[$index],
-                    'description' => $descriptions[$index]
-                ]);
-        }
-
-    }
-
-    public function update(Request $request, $id): JsonResponse
-    {
-        $dog = $this->dogService->getDogInfoById($id);
-
-        if (!$dog) {
-            return response()->json(['message' => 'Dog not found'], 404);
-        }
-
-        $language = $request->input('lang', 'en');
-
-        $dog = $this->dogService->update($dog, $request->all(), $language);
-
-        if (!$dog) {
-            return response()->json(['message' => 'Update failed'], 500);
-        }
-
-        return response()->json($dog);
     }
 
     public function destroy($id): JsonResponse

@@ -89,38 +89,39 @@ class DogService
         return $dog;
     }
 
-    public function update(Dog $dog, $data, $language): Dog
+    public function update($data): void
     {
-        $validator = Validator::make($data, [
-            'exercise_needs' => 'nullable|integer|digits_between:1,10',
-            'grooming_requirements' => 'nullable|integer|digits_between:1,10',
-            'trainability' => 'nullable|integer|digits_between:1,10',
-            'protectiveness' => 'nullable|integer|digits_between:1,10',
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        $validator = Validator::make($data, $this->rulesetAllLanguages);
 
         if ($validator->fails()) {
             throw new InvalidArgumentException($validator->errors()->first());
         }
 
-        $dog->update([
+        $dogData = [
+            'id' => $data['id'],
             'exercise_needs' => $data['exercise_needs'],
-            'grooming_requirements' => $data['grooming_requirements'],
+            'grooming_requirements' => $data ['grooming_requirements'],
             'trainability' => $data['trainability'],
             'protectiveness' => $data['protectiveness'],
-        ]);
+        ];
 
-        $translation = $dog->translations()
-            ->where('language', $language)
-            ->first();
+        $dog = Dog::findOrFail($data['id']);
+        $dog->update($dogData);
 
-        $translation?->update([
-            'name' => $data['name'],
-            'description' => $data['description'],
-        ]);
+        $languages = $data['languages'];
+        $descriptions = $data['description'];
+        $names = $data['name'];
 
-        return $dog;
+        foreach ($languages as $index => $language) {
+            DogsLanguage::where('dog_id', $data['id'])
+                ->where('language', $language)
+                ->update([
+                    'name' => $names[$index],
+                    'description' => $descriptions[$index]
+                ]);
+        }
+
+
     }
 
     public function delete(Dog $dog): ?bool
