@@ -10,6 +10,17 @@ use InvalidArgumentException;
 
 class DogService
 {
+
+    protected array $rulesetAllLanguages = [
+        'exercise_needs' => 'required|integer|digits_between:1,10',
+        'grooming_requirements' => 'required|integer|digits_between:1,10',
+        'trainability' => 'required|integer|digits_between:1,10',
+        'protectiveness' => 'required|integer|digits_between:1,10',
+        'name' => 'required|array',
+        'name.*' => 'required|string|max:255',
+        'description' => 'required|array',
+        'description.*' => 'required|string',
+    ];
     public function getAll($language): Collection
     {
         $dogs = Dog::all();
@@ -52,16 +63,7 @@ class DogService
 
     public function create($data, $languages)
     {
-        $validator = Validator::make($data, [
-            'exercise_needs' => 'required|integer|digits_between:1,10',
-            'grooming_requirements' => 'required|integer|digits_between:1,10',
-            'trainability' => 'required|integer|digits_between:1,10',
-            'protectiveness' => 'required|integer|digits_between:1,10',
-            'name' => 'required|array',
-            'name.*' => 'required|string|max:255',
-            'description' => 'required|array',
-            'description.*' => 'required|string',
-        ]);
+        $validator = Validator::make($data, $this->rulesetAllLanguages);
 
         if ($validator->fails()) {
             throw new InvalidArgumentException($validator->errors()->first());
@@ -126,9 +128,5 @@ class DogService
         return $dog->delete();
     }
 
-    public function findByBreed($breed)
-    {
-        return Dog::where('breed', $breed)->get();
-    }
 }
 
