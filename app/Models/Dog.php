@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dog extends Model
 {
@@ -16,7 +17,7 @@ class Dog extends Model
         'protectiveness',
     ];
 
-    public function translations()
+    public function translations(): HasMany
     {
         return $this->hasMany(DogsLanguage::class, "dog_id");
     }

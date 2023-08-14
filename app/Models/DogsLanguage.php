@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DogsLanguage extends Model
 {
@@ -17,7 +18,7 @@ class DogsLanguage extends Model
 
     protected $fillable = ['dog_id', 'language', 'name', 'description'];
 
-    public function dog(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function dog(): BelongsTo
     {
         return $this->belongsTo(Dog::class, 'dog_id');
     }
