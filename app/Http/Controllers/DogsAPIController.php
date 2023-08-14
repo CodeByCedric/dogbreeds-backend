@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Dog;
+use App\Models\DogsLanguage;
 use App\Modules\Services\DogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -56,6 +58,36 @@ class DogsAPIController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
+    }
+
+    public function updateAllLanguages(Request $request)
+    {
+        $data = $request->all();
+
+        $dogData = [
+            'id' => $data['id'],
+            'exercise_needs' => $data['exercise_needs'],
+            'grooming_requirements' => $data ['grooming_requirements'],
+            'trainability' => $data['trainability'],
+            'protectiveness' => $data['protectiveness'],
+        ];
+
+        $dog = Dog::findOrFail($data['id']);
+        $dog->update($dogData);
+
+        $languages = $data['languages'];
+        $descriptions = $data['description'];
+        $names = $data['name'];
+
+        foreach ($languages as $index => $language) {
+            $dogsLanguage = DogsLanguage::where('dog_id', $data['id'])
+                ->where('language', $language)
+                ->update([
+                    'name' => $names[$index],
+                    'description' => $descriptions[$index]
+                ]);
+        }
+
     }
 
     public function update(Request $request, $id): JsonResponse
