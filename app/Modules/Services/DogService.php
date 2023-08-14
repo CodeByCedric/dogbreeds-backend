@@ -61,6 +61,46 @@ class DogService
         return null;
     }
 
+    public function getDogWithTranslations($id)
+    {
+        $dog = Dog::find($id);
+
+        if (!$dog) {
+            return null;
+        }
+
+        $languages = ['en', 'nl']; // Niet optimaal, wat als er talen bijkomen, zit nogal diep verborgen...
+
+        $translations = DogsLanguage::where('dog_id', $dog->id)
+            ->whereIn('language', $languages)
+            ->get();
+
+        $dogData = [
+            'id' => $dog->id,
+            'exercise_needs' => $dog->exercise_needs,
+            'grooming_requirements' => $dog->grooming_requirements,
+            'trainability' => $dog->trainability,
+            'protectiveness' => $dog->protectiveness,
+            'name' => [],
+            'description' => [],
+            'languages' => $languages,
+        ];
+
+        foreach ($languages as $language) {
+            $translation = $translations->firstWhere('language', $language);
+
+            if ($translation) {
+                $dogData['name'][] = $translation->name;
+                $dogData['description'][] = $translation->description;
+            } else {
+                $dogData['name'][] = '';
+                $dogData['description'][] = '';
+            }
+        }
+        return $dogData;
+    }
+
+
     public function create($data, $languages)
     {
         $validator = Validator::make($data, $this->rulesetAllLanguages);

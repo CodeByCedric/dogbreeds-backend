@@ -36,6 +36,17 @@ class DogsAPIController extends Controller
         return response()->json($dog);
     }
 
+    public function showWithTranslations($id): JsonResponse
+    {
+        $dog = $this->dogService->getDogWithTranslations($id);
+
+        if (!$dog) {
+            return response()->json(['message' => 'Dog not found'], 404);
+        }
+
+        return response()->json($dog);
+    }
+
     public function store(Request $request): JsonResponse
     {
         try {
