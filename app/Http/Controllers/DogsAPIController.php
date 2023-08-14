@@ -58,11 +58,11 @@ class DogsAPIController extends Controller
         }
     }
 
-    public function updateAllLanguages(Request $request): void
+    public function updateDogAndTranslations(Request $request): void
     {
         $data = $request->all();
 
-        $this->dogService->update($data);
+        $this->dogService->updateDogAndTranslations($data);
 
 
     }

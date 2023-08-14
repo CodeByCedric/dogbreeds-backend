@@ -89,7 +89,7 @@ class DogService
         return $dog;
     }
 
-    public function update($data): void
+    public function updateDogAndTranslations($data): void
     {
         $validator = Validator::make($data, $this->rulesetAllLanguages);
 

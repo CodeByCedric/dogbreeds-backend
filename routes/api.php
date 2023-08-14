@@ -26,7 +26,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
 
     Route::post('/dogs', [DogsAPIController::class, 'store']);
-    Route::put('/dogs/{id}', [DogsAPIController::class, 'update']);
+    Route::put('/dogs/{id}', [DogsAPIController::class, 'updateDogAndTranslations']);
     Route::delete('/dogs/{id}', [DogsAPIController::class, 'destroy']);
 
 });
